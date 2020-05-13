@@ -1,0 +1,264 @@
+{% load staticfiles %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="/docs/4.0/assets/img/favicons/favicon.ico">
+
+    <title>Resumen CovidMX. By Omar Rosas</title>
+
+    <link rel="canonical" href="https://getbootstrap.com/docs/4.0/examples/album/">
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+ 
+ <!--Google Chart Example-->
+ <!--Load the AJAX API-->
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+
+      // Load Charts and the corechart package.
+      google.charts.load('current', {'packages':['corechart']});
+
+      // Draw the pie chart for Sarah's pizza when Charts is loaded.
+      google.charts.setOnLoadCallback(drawSarahChart);
+
+      // Draw the pie chart for the Anthony's pizza when Charts is loaded.
+      google.charts.setOnLoadCallback(drawAnthonyChart);
+
+      // Callback that draws the pie chart for Sarah's pizza.
+      function drawSarahChart() {
+
+        // Create the data table for Sarah's pizza.
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'Topping');
+        data.addColumn('number', 'Slices');
+        data.addRows([
+          ['Mushrooms', 1],
+          ['Onions', 1],
+          ['Olives', 2],
+          ['Zucchini', 2],
+          ['Pepperoni', 1]
+        ]);
+
+        // Set options for Sarah's pie chart.
+        var options = {title:'How Much Pizza Sarah Ate Last Night',
+                       width:400,
+                       height:300};
+
+        // Instantiate and draw the chart for Sarah's pizza.
+        var chart = new google.visualization.PieChart(document.getElementById('chart_div'));
+        chart.draw(data, options);
+      }
+
+      // Callback that draws the pie chart for Anthony's pizza.
+      function drawAnthonyChart() {
+
+        // Create the data table for Anthony's pizza.
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'Topping');
+        data.addColumn('number', 'Slices');
+        data.addRows([
+          ['Mushrooms', 2],
+          ['Onions', 2],
+          ['Olives', 2],
+          ['Zucchini', 0],
+          ['Pepperoni', 3]
+        ]);
+
+        // Set options for Anthony's pie chart.
+        var options = {title:'How Much Pizza Anthony Ate Last Night',
+                       width:400,
+                       height:300};
+
+        // Instantiate and draw the chart for Anthony's pizza.
+        var chart = new google.visualization.PieChart(document.getElementById('chart_div2'));
+        chart.draw(data, options);
+      }
+    </script>
+  </head>
+
+  <body>
+
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #7E3552;">
+            <a class="navbar-brand" href="#">CoVid19 En México</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav ml-auto">
+                <li class="nav-item active">
+                  <a class="nav-link" href="#">Detalle Nacional <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#">Por Estado</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#">Por Municipio</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#">XXX</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
+                </li>
+              </ul>
+            </div>
+          </nav>
+    </header>
+
+
+
+
+    <main role="main">
+
+
+
+
+
+      <section class="jumbotron text-center">
+        <div class="container">
+          <h1 class="jumbotron-heading">Hola, Soy Omar Rosas</h1>
+          <p class="lead text-muted">Test web app con Django, y Bootstrap. It's the thrill of handling the requests that the people want.</p>
+          <p>
+            <a href="mailto:omarrosas@yahoo.com.mx" class="btn btn-primary my-2">Envíame un Email</a>
+            <a href="#" class="btn btn-secondary my-2">Secondary action</a>
+          </p>
+          <img class="rounded mx-auto d-block" src="{% static 'omar_Golden_Gate.jpg' %}" alt="Foto Omar" width="350">
+        </div>
+      </section>
+
+    </main>
+    <div class="container">
+        <div class="row">
+            <div class="col">
+            1 of 3
+            </div>
+            <div class="col-8">
+            <h1 class="jumbotron-heading text-center mb-4">COVID-19 EN MÉXICO</h1>
+            </div>
+            <div class="col">
+            3 of 3
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col">
+                <h2 class="jumbotron-heading text-center">Resumen a Nivel Nacional Al xx-ABR-2020</h1>
+                <table class="table table-hover table-dark">
+                        <thead>
+                            <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Confirmados</th>
+                            <th scope="col">Sospechosos</th>
+                            <th scope="col">Negativos</th>
+                            <th scope="col">Defunciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                            <th scope="row">1</th>
+                            <td>Mark</td>
+                            <td>Otto</td>
+                            <td>@mdo</td>
+                            <td>@mdo</td>
+                            </tr>
+
+                        </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-md-6">
+                <h2 class="text-center">Datos De CDMX al xx-ABR-2020</h1>
+                <div class="table-responsive">
+                <table class="table table-hover table-dark">
+                        <thead>
+                            <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Municipio</th>
+                            <th scope="col">Confirmados</th>
+                            <th scope="col">Negativos</th>
+                            <th scope="col">Defunciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                            <th scope="row">1</th>
+                            <td>Alcaldía</td>
+                            <td>1000</td>
+                            <td>2000</td>
+                            <td>3000</td>
+                            </tr>
+                        </tbody>
+                </table>
+                </div>
+            </div>
+                <div class="col-md-6">
+                <h2 class="text-center">Municipios Estado De México</h1>
+                <div class="table-responsive">
+                <table class="table table-hover table-dark">
+                        <thead>
+                            <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Municipio</th>
+                            <th scope="col">Confirmados</th>
+                            <th scope="col">Negativos</th>
+                            <th scope="col">Defunciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                            <th scope="row">1</th>
+                            <td>El Oro</td>
+                            <td>1000</td>
+                            <td>120</td>
+                            <td>55</td>
+                            </tr>
+                        </tbody>
+                </table>
+                </div>
+            </div>
+        </div>   
+          <div class="row">
+                <div class="col-md-6">
+                    <div id="chart_div"></div>
+                </div>
+                <div class="col-md-6">
+                    <div id="chart_div2"></div>
+                </div>
+           </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div id="chart_div3"></div>
+                </div>
+           </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+    <footer class="text-muted">
+      <div class="container text-center">
+        <p>&copy; Omar Rosas {% now "Y" %}</p>
+      </div>
+    </footer>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+  </body>
+</html>

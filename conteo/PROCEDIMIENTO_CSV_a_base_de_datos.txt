@@ -1,0 +1,288 @@
+
+https://www.gob.mx/salud/documentos/datos-abiertos-152127
+
+Base de datos:
+http://187.191.75.115/gobmx/salud/datos_abiertos/datos_abiertos_covid19.zip
+
+Diccionario de datos:
+http://187.191.75.115/gobmx/salud/datos_abiertos/diccionario_datos_covid19.zip
+
+
+Eliminar tablas
+
+DROP SCHEMA public CASCADE;
+CREATE SCHEMA public;
+
+GRANT ALL ON SCHEMA public TO postgres;
+GRANT ALL ON SCHEMA public TO public;
+
+
++++++++++++++++++++++++++++++++++++
+LISTAR COLUMNAS
+
+
+      SELECT
+       COLUMN_NAME
+      FROM
+       information_schema.COLUMNS
+      WHERE
+       TABLE_NAME = 'conteo_paciente';
+
++++++++++++++++++++++++++
+Copiar tabla a otra base de datos_abiertos
+
+pg_dump -t table_to_copy source_db | psql target_db
+
+pg_dump -U postgres -n schema -t conteo_paciente covidmxdb | psql m2mdb
+
+
+*****************************************
+
+
+
+
+SELECT column_name(s)
+FROM table1
+LEFT JOIN table2
+ON table1.column_name = table2.column_name;
+
+table1= conteo_paciente
+table2 = conteo_municipio
+
+SELECT conteo_paciente.municipio_res, conteo_paciente.entidad_res_id, (conteo_municipio.id) as municipioID
+FROM conteo_paciente
+LEFT JOIN conteo_municipio
+ON conteo_paciente.municipio_res=conteo_municipio.clave AND conteo_paciente.entidad_res_id=conteo_municipio.entidad_id
+
+************************
+
+
+
+
+
+++++++++++++++++++++++++++++
+1.- Quita línea de encabezado
+2.- insertar id entero consecutivo en primera columna
+3.- Cambiar fechas de 9999-99-99 a 1999-01-01 en columna FECHA_DEF
+4.- Mover columnas que se refieren a los foreing keys
+
+
+
+
+PATH: Corto:
+for %I in (.) do echo %~sI
+
+
+En psql ejecutar:
+
+\copy "conteo_paciente" FROM 'C:\Users\joros\Envs\covidmx\proyecto\COVIDM~1\00_CSV~1\covid_combinados.csv' DELIMITER ',' CSV;
+
+
+5.- Corregir índice
+
+SELECT count(*) FROM conteo_paciente;
+
+ALTER SEQUENCE "conteo_paciente_id_seq" RESTART WITH 406546;
+
+
+QUERYS de ejemplo:
+
+INFECTADOS TOTALES:
+
+SELECT fecha, count(conteo_paciente.resultado_id)
+FROM conteo_paciente
+WHERE conteo_paciente.resultado_id=1
+GROUP BY fecha
+ORDER BY  fecha DESC;
+
+
+Infectados Totales para CDMX
+
+09	CIUDAD DE MÉXICO
+
+
+SELECT fecha, municipio_res, count(conteo_paciente.resultado_id)
+FROM conteo_paciente
+WHERE conteo_paciente.entidad_res_id=9
+    AND conteo_paciente.resultado_id=1
+GROUP BY fecha, municipio_res
+ORDER BY  municipio_res, count(municipio_res) DESC;
+
+
+Infectados Totales para Estado de México
+
+15	MÉXICO
+
+035	HUEHUETOCA
+057 NAUCALPAN DE JUÁREZ
+060	NICOLÁS ROMERO
+064	EL ORO
+104	TLALNEPANTLA DE BAZ
+
+SELECT fecha, municipio_res, count(municipio_res)
+FROM conteo_paciente
+WHERE conteo_paciente.entidad_res_id=15
+    AND conteo_paciente.resultado_id=1
+    AND municipio_res IN (35, 60, 64, 57, 104 )
+GROUP BY fecha, municipio_res
+ORDER BY  count(municipio_res) DESC;
+
+
+SELECT fecha, municipio_res, count(municipio_res)
+FROM conteo_paciente
+WHERE entidad_res=15
+    AND resultado=1
+    AND municipio_res IN (64, 60, 35, 104)
+GROUP BY fecha, municipio_res
+ORDER BY  count(municipio_res) DESC;
+
+
+************************************************************************
+
+
+
+ToDO
+Columnas para merge deben tener el mismo nombre. Ejemplo:
+fecha
+municipio_id
+entidad_res_id
+<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+
+QUERY contagiados por municipio por fecha específica
+
+SELECT conteo_paciente.fecha as fecha, conteo_paciente.entidad_res_id as entidad_res_id, 
+	conteo_paciente.municipio_id as municipio_id, 
+	COUNT(conteo_paciente.resultado_id) as contagiados
+FROM conteo_paciente WHERE fecha='2020-05-04' 
+AND resultado_id=1 
+GROUP BY conteo_paciente.fecha, conteo_paciente.entidad_res_id, conteo_paciente.municipio_id;
+
+
+QUERY sospechosos por municipio por fecha específica
+
+SELECT conteo_paciente.fecha as fecha_sospechoso, conteo_paciente.entidad_res_id as entidad_res_id, 
+	conteo_paciente.municipio_id as municipio_id, 
+	COUNT(conteo_paciente.resultado_id) as sospechosos
+FROM conteo_paciente WHERE fecha='2020-05-04' 
+AND resultado_id=3 
+GROUP BY conteo_paciente.fecha, conteo_paciente.entidad_res_id, conteo_paciente.municipio_id;
+
+
+QUERY defuncione;
+
+SELECT conteo_paciente.fecha as fecha_defuncion, conteo_paciente.entidad_res_id as entidad_res_id, conteo_paciente.municipio_id as municipio_id, 
+    COUNT(conteo_paciente.fecha_def) as defunciones 
+FROM conteo_paciente WHERE fecha='2020-05-04' AND conteo_paciente.fecha_def IS NOT NULL 
+GROUP BY conteo_paciente.fecha, conteo_paciente.entidad_res_id, conteo_paciente.municipio_id;
+ 
+*********************************************************************
+
+IMPORTANTE
+IMPORTANTE
+IMPORTANTE
+IMPORTANTE
+IMPORTANTE
+IMPORTANTE
+QUERY PARA crear TABLA FINAL
+IMPORTANTE
+IMPORTANTE
+IMPORTANTE
+IMPORTANTE
+IMPORTANTE
+IMPORTANTE
+IMPORTANTE
+IMPORTANTE
+
+SELECT ROW_NUMBER() OVER (ORDER BY 'fecha' DESC) as id,
+    p.fecha as fecha, 
+    p.entidad_res_id as entidad_res_id, 
+	p.municipio_id as municipio_id, 
+	COUNT(case when p.resultado_id = 1 then 1 else null end) as contagiados, 
+	COUNT(case when p.resultado_id = 3 then 1 else null end) as sospechosos,
+	COUNT(case when p.resultado_id = 2 then 1 else null end) as negativos,
+    COUNT(case when (p.resultado_id = 1 AND p.fecha_sintomas >= p.fecha - INTERVAL '13 DAYS') then 1 else null end) as activos,
+    (COUNT(case when p.resultado_id = 1 then 1 else null end) - 
+        COUNT(case when (p.resultado_id = 1 AND p.fecha_sintomas >= p.fecha - INTERVAL '13 DAYS') then 1 else null end) - 
+        COUNT(case when p.fecha_def IS NOT NULL AND p.resultado_id = 1 then 1 else null end)) as recuperados, 
+	COUNT(case when p.fecha_def IS NOT NULL AND p.resultado_id = 1 then 1 else null end) as defunciones_covid,
+	COUNT(case when p.fecha_def IS NOT NULL AND p.resultado_id != 1 then 1 else null end) as defunciones_no_covid,
+	COUNT(case when p.intubado_id = 1 then 1 else null end) as intubados,
+	COUNT(case when (p.intubado_id = 1 AND p.fecha_def IS NOT NULL AND p.resultado_id = 1) then 1 else null end) as intubados_fallecidos,
+    COUNT(case when p.sexo_id = 1 then 1 else null end) as sexo_mujer,
+    COUNT(case when p.sexo_id = 2 then 1 else null end) as sexo_hombre,
+    COUNT(case when p.sexo_id = 99 then 1 else null end) as sexo_no_especificado,
+    COUNT(case when p.tipo_paciente_id = 1 then 1 else null end) as tipo_paciente_ambulatorio,
+    COUNT(case when p.tipo_paciente_id = 2 then 1 else null end) as tipo_paciente_hospitalizado,
+    COUNT(case when p.tipo_paciente_id = 99 then 1 else null end) as tipo_paciente_no_especificado
+FROM conteo_paciente p WHERE fecha='2020-05-12' 
+GROUP BY p.fecha, p.entidad_res_id, p.municipio_id;
+
+
+
+
+
+
+
+
+SELECT ROW_NUMBER() OVER (ORDER BY 'p.fecha' DESC) as id,
+    p.fecha as fecha, 
+    COUNT(case when p.resultado_id = 1 then 1 else null end) as contagiados, 
+    COUNT(case when p.resultado_id = 3 then 1 else null end) as sospechosos,
+    COUNT(case when p.resultado_id = 2 then 1 else null end) as negativos,
+    COUNT(case when (p.resultado_id = 1 AND p.fecha_sintomas >= p.fecha - INTERVAL '13 DAYS') then 1 else null end) as activos,
+    (COUNT(case when p.resultado_id = 1 then 1 else null end) - 
+        COUNT(case when (p.resultado_id = 1 AND p.fecha_sintomas >= p.fecha - INTERVAL '13 DAYS') then 1 else null end) - 
+        COUNT(case when p.fecha_def IS NOT NULL AND p.resultado_id = 1 then 1 else null end)) as recuperados, 
+    COUNT(case when p.fecha_def IS NOT NULL AND p.resultado_id = 1 then 1 else null end) as defunciones_covid,
+	COUNT(case when p.fecha_def IS NOT NULL AND p.resultado_id != 1 then 1 else null end) as defunciones_no_covid,
+    COUNT(case when p.intubado_id = 1 then 1 else null end) as intubados,
+    COUNT(case when (p.intubado_id = 1 AND p.fecha_def IS NOT NULL AND p.resultado_id = 1) then 1 else null end) as intubados_fallecidos,
+    COUNT(case when p.sexo_id = 1 then 1 else null end) as sexo_mujer,
+    COUNT(case when p.sexo_id = 2 then 1 else null end) as sexo_hombre,
+    COUNT(case when p.sexo_id = 99 then 1 else null end) as sexo_no_especificado,
+    COUNT(case when p.tipo_paciente_id = 1 then 1 else null end) as tipo_paciente_ambulatorio,
+    COUNT(case when p.tipo_paciente_id = 2 then 1 else null end) as tipo_paciente_hospitalizado,
+    COUNT(case when p.tipo_paciente_id = 99 then 1 else null end) as tipo_paciente_no_especificado, 
+    p.entidad_res_id as entidad_res_id, 
+	p.municipio_id as municipio_id 
+FROM conteo_paciente p
+GROUP BY p.fecha, p.entidad_res_id, p.municipio_id;
+
+
+
+
+>>>> Query lista los 30 Entidades y Municipios con más casos confirmados Covid19 al 09-MAY-2020
+
+SELECT conteo_paciente.fecha as fecha, conteo_paciente.entidad_res_id as entidad_res_id,
+		conteo_paciente.municipio_id as municipio_id, 
+		conteo_entidad.nombre as entidad, 
+		conteo_municipio.nombre as municipio,
+	COUNT(conteo_paciente.resultado_id) as contagiados
+FROM conteo_paciente, conteo_municipio, conteo_entidad
+WHERE conteo_paciente.fecha='2020-05-12' AND conteo_paciente.municipio_id = conteo_municipio.id 
+	AND conteo_paciente.entidad_res_id = conteo_entidad.id 
+AND conteo_paciente.resultado_id=1 
+GROUP BY conteo_paciente.fecha, conteo_paciente.entidad_res_id, conteo_entidad.nombre,conteo_municipio.nombre, conteo_paciente.municipio_id 
+ORDER BY contagiados DESC LIMIT 30;
+
+
+************************************************
+MAPA MUNICIPIOS MÉXICO
+
+Creación de Mapa con leaflet
+https://mappinggis.com/2013/08/como-crear-un-mapa-web-a-partir-de-un-shapefile/
+
+Checar información de Inegi
+Marco Geoestadístico, diciembre 2018
+https://www.inegi.org.mx/app/biblioteca/ficha.html?upc=889463674658
+
+Checar conversión de formato de archivo de Inegi (ShaPes File) a geoJson con geopandas
+https://stackoverflow.com/questions/43119040/shapefile-into-geojson-conversion-python-3
+
+
+
+
+Inegi mortalidad
+https://www.inegi.org.mx/temas/mortalidad/
+

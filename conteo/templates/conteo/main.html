@@ -1,0 +1,276 @@
+
+{% extends 'base.html' %}
+
+{% block content %}
+<!--Google Chart Example-->
+ <!--Load the AJAX API-->
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+
+      // Load Charts and the corechart package.
+      google.charts.load('current', {'packages':['corechart']});
+
+      // Draw the pie chart for Sarah's pizza when Charts is loaded.
+      google.charts.setOnLoadCallback(drawSarahChart);
+
+      // Draw the pie chart for the Anthony's pizza when Charts is loaded.
+      google.charts.setOnLoadCallback(drawAnthonyChart);
+
+      // Callback that draws the pie chart for Sarah's pizza.
+      function drawSarahChart() {
+
+        // Create the data table for Sarah's pizza.
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'Topping');
+        data.addColumn('number', 'Slices');
+        data.addRows([
+          ['Mushrooms', 1],
+          ['Onions', 1],
+          ['Olives', 2],
+          ['Zucchini', 2],
+          ['Pepperoni', 1]
+        ]);
+
+        // Set options for Sarah's pie chart.
+        var options = {title:'How Much Pizza Sarah Ate Last Night',
+                       width:400,
+                       height:300};
+
+        // Instantiate and draw the chart for Sarah's pizza.
+        var chart = new google.visualization.PieChart(document.getElementById('chart_div'));
+        chart.draw(data, options);
+      }
+
+      // Callback that draws the pie chart for Anthony's pizza.
+      function drawAnthonyChart() {
+
+        // Create the data table for Anthony's pizza.
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'Topping');
+        data.addColumn('number', 'Slices');
+        data.addRows([
+          ['Mushrooms', 2],
+          ['Onions', 2],
+          ['Olives', 2],
+          ['Zucchini', 0],
+          ['Pepperoni', 3]
+        ]);
+
+        // Set options for Anthony's pie chart.
+        var options = {title:'How Much Pizza Anthony Ate Last Night',
+                       width:400,
+                       height:300};
+
+        // Instantiate and draw the chart for Anthony's pizza.
+        var chart = new google.visualization.PieChart(document.getElementById('chart_div2'));
+        chart.draw(data, options);
+      }
+    </script>
+  <div class="container">
+
+    <div class="row">
+            <div class="col">
+              <h2 class="jumbotron-heading text-center mb-5">Casos CoVid A Nivel Nacional En México Al {{ str_ultima_fecha }}</h1>
+            </div>
+    </div>
+
+          <div class="row mb-5">
+              <div class="col-sm-3">
+                <div class='experimento'>
+                <p class="text-center"><button type="button" class="btn btn-danger btn-lg">{{ confirmados_nacional }}</button></p>
+                <p class="text-center">Confirmados</p>
+                </div>
+              </div>
+              <div class="col-sm-3">
+                <div class='experimento'>
+                <p class="text-center"><button type="button" class="btn btn-warning btn-lg">{{ sospechosos_nacional }}</button></p>
+                  <p class="text-center">Sospechosos</p>
+                </div>
+                </div>
+              <div class="col-sm-3">
+                <div class='experimento'>
+                <p class="text-center"><button type="button" class="btn btn-dark btn-lg">{{ defunciones_nacional }}</button></p>
+                  <p class="text-center">Defunciones</p>
+                </div>
+              </div>
+              <div class="col-sm-3">
+                <div class='experimento'>
+                  <p class="text-center">Al día: {{ str_ultima_fecha }}</p>
+                  <p class="text-center">Resultados de Otros Días en CDMX.</p>
+                </div>
+              </div>
+          </div>
+
+
+    <div class="row mt-5">
+            <div class="col">
+              <h2 class="jumbotron-heading text-center mb-5">Casos CoVid En CDMX Al {{ str_ultima_fecha }}</h1>
+            </div>
+    </div>
+
+      <div class="row">
+              <div class="col-sm-3">
+                <div class='experimento'>
+                <p class="text-center"><button type="button" class="btn btn-danger btn-lg">{{ confirmados_cdmx }}</button></p>
+                <p class="text-center">Confirmados</p>
+                </div>
+              </div>
+              <div class="col-sm-3">
+                <div class='experimento'>
+                <p class="text-center"><button type="button" class="btn btn-warning btn-lg">{{ sospechosos_cdmx }}</button></p>
+                  <p class="text-center">Sospechosos</p>
+                </div>
+                </div>
+              <div class="col-sm-3">
+                <div class='experimento'>
+                <p class="text-center"><button type="button" class="btn btn-dark btn-lg">{{ defunciones_cdmx }}</button></p>
+                  <p class="text-center">Defunciones</p>
+                </div>
+              </div>
+              <div class="col-sm-3">
+                <div class='experimento'>
+                  <p class="text-center">Al día: {{ str_ultima_fecha }}</p>
+                  <p class="text-center">Ver resultados de otros días.</p>
+                </div>
+              </div>
+          </div>
+
+          <div class="row mt-3">
+              <div class="col">
+                  <h2 class="jumbotron-heading text-center">Confirmados CoVid19 Estado de México al: {{ str_ultima_fecha }}</h1>
+                  <ul>
+
+                  <div class="table-responsive">
+                  <table class="table table-hover table-dark">
+                          <thead>
+                              <tr>
+                              <th scope="col">#</th>
+                              <th scope="col">Municipio</th>
+                              <th scope="col">Prueba</th>
+                              <th scope="col">Cantidad</th>
+                              <th scope="col">xxx</th>
+                              </tr>
+                          </thead>
+                          <tbody>
+                            {% for dicedomx in algunos_edo_mex %}
+                              <tr>
+                              <th scope="row">{{ forloop.counter }}</th>
+                              <td>{{ dicedomx.municipio_id__nombre|lower|capfirst }}</td>
+                              <td>{{ dicedomx.resultado__descripcion }}</td>
+                              <td>{{ dicedomx.resultado__count }}</td>
+                              <td>0</td>
+                              </tr>
+                              {% endfor %}
+                          </tbody>
+                  </table>
+                  </div>
+
+
+                  <h2 class="jumbotron-heading text-center">Confirmados CoVid19 CDMX al: {{ str_ultima_fecha }}</h1>
+                  <ul>
+
+
+                    {% comment %} {% for eldic in detalle_cdmx_lista %}
+                        </br>
+                        {{ eldic.municipio_id__nombre }}: </br>
+                        {{ eldic.resultado__descripcion }}: {{ eldic.resultado__count }}
+                        </br>
+                    {% endfor %} {% endcomment %}
+
+                  <div class="table-responsive">
+                  <table class="table table-hover table-dark">
+                          <thead>
+                              <tr>
+                              <th scope="col">#</th>
+                              <th scope="col">Alcaldía</th>
+                              <th scope="col">Prueba</th>
+                              <th scope="col">Cantidad</th>
+                              <th scope="col">xxx</th>
+                              </tr>
+                          </thead>
+                          <tbody>
+                            {% for eldic in detalle_cdmx_lista %}
+                              <tr>
+                              <th scope="row">{{ forloop.counter }}</th>
+                              <td>{{ eldic.municipio_id__nombre }}</td>
+                              <td>{{ eldic.resultado__descripcion }}</td>
+                              <td>{{ eldic.resultado__count }}</td>
+                              <td>0</td>
+                              </tr>
+                              {% endfor %}
+                          </tbody>
+                  </table>
+                  </div>
+
+
+                  </ul>
+
+              </div>
+          </div>
+          <div class="row mt-3">
+              <div class="col-md-6">
+                  <h2 class="text-center">Datos De CDMX al xx-ABR-2020</h1>
+                  <div class="table-responsive">
+                  <table class="table table-hover table-dark">
+                          <thead>
+                              <tr>
+                              <th scope="col">#</th>
+                              <th scope="col">Alcaldía</th>
+                              <th scope="col">Prueba</th>
+                              <th scope="col">Cantidad</th>
+                              <th scope="col">xxx</th>
+                              </tr>
+                          </thead>
+                          <tbody>
+                              <tr>
+                              <th scope="row">1</th>
+                              <td>Alcaldía</td>
+                              <td>Prueba</td>
+                              <td>Cantidad</td>
+                              <td>xx</td>
+                              </tr>
+                          </tbody>
+                  </table>
+                  </div>
+              </div>
+                  <div class="col-md-6">
+                  <h2 class="text-center">Municipios Estado De México</h1>
+                  <div class="table-responsive">
+                  <table class="table table-hover table-dark">
+                          <thead>
+                              <tr>
+                              <th scope="col">#</th>
+                              <th scope="col">Municipio</th>
+                              <th scope="col">Confirmados</th>
+                              <th scope="col">Negativos</th>
+                              <th scope="col">Defunciones</th>
+                              </tr>
+                          </thead>
+                          <tbody>
+                              <tr>
+                              <th scope="row">1</th>
+                              <td>El Oro</td>
+                              <td>1000</td>
+                              <td>120</td>
+                              <td>55</td>
+                              </tr>
+                          </tbody>
+                  </table>
+                  </div>
+              </div>
+          </div>   
+            <div class="row">
+                  <div class="col-md-6">
+                      <div id="chart_div"></div>
+                  </div>
+                  <div class="col-md-6">
+                      <div id="chart_div2"></div>
+                  </div>
+            </div>
+              <div class="row">
+                  <div class="col-md-12">
+                      <div id="chart_div3"></div>
+                  </div>
+            </div>
+      </div>
+{% endblock content %}
